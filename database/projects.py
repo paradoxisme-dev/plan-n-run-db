@@ -88,8 +88,8 @@ class ObservableModel(Model, Observable):
         database = db
 
 
-class ContentHistory(ObservableModel):
-    observable_name = "content_history"
+class HistorisedContent(ObservableModel):
+    observable_name = "historised_content"
     history = ForeignKeyField('self', backref='history')
     content = TextField()
     change_description = TextField(null=True)
@@ -101,24 +101,45 @@ class ContentHistory(ObservableModel):
         )
 
 
+class RessourceType(ObservableModel):
+    observable_name = "ressource_type"
+    name = CharField()
+    description = ForeignKeyField(HistorisedContent, backref='ressource_types')
+
+
+class Ressource(ObservableModel):
+    observable_name = "ressource"
+    name = CharField()
+    type = ForeignKeyField(RessourceType, backref='ressources')
+    description = ForeignKeyField(HistorisedContent, backref='ressources')
+
+
+class RessourceNote(ObservableModel):
+    observable_name = "ressource_note"
+    ressource = ForeignKeyField(Ressource, backref='notes')
+    content = ForeignKeyField(HistorisedContent, backref='ressource_notes')
+
+
 class ProjectType(ObservableModel):
     observable_name = "project_type"
     name = CharField(unique=True)
-    description = TextField()
+    description = ForeignKeyField(HistorisedContent, backref='project_types')
 
 
 class Project(ObservableModel):
     observable_name = "project"
     title = CharField()
-    description = TextField()
+    description = ForeignKeyField(HistorisedContent, backref='projects')
     type = ForeignKeyField(ProjectType, backref='projects')
+    ressources = ForeignKeyField(Ressource, backref='projects')
 
 
 class SubProject(ObservableModel):
     observable_name = "sub_project"
     title = CharField()
-    description = TextField()
+    description = ForeignKeyField(HistorisedContent, backref='sub_projects')
     project = ForeignKeyField(Project, backref='sub_projects')
+    ressources = ForeignKeyField(Ressource, backref='sub_projects')
 
 
 class Element(ObservableModel):
@@ -126,8 +147,9 @@ class Element(ObservableModel):
     parent_element = ForeignKeyField('self', backref='child_elements', null=True)
     order = IntegerField()
     name = CharField()
-    description = TextField()
+    description = ForeignKeyField(HistorisedContent, backref='elements')
     sub_project = ForeignKeyField(SubProject, backref='elements')
+    ressources = ForeignKeyField(Ressource, backref='elements')
 
     def change_order(self, new_order):
         """Change the order of the element within its sub_project and parent_element context."""
@@ -224,6 +246,7 @@ class RecordingNote(ObservableModel):
     element = ForeignKeyField(ElementInRecord, backref='notes')
     timestamp = IntegerField()  # en secondes
     content = TextField()
+    ressources = ForeignKeyField(Ressource, backref='projects')
 
 
 class UpdateOBSInputSetting(ObservableModel):
@@ -231,3 +254,26 @@ class UpdateOBSInputSetting(ObservableModel):
     element = ForeignKeyField(Element, backref='obs_input_settings')
     name = CharField()
     settings = TextField()
+
+
+models = [
+    HistorisedContent,
+    RessourceType,
+    Ressource,
+    RessourceNote,
+    ProjectType,
+    Project,
+    SubProject,
+    Element,
+    Record,
+    ElementInRecord,
+    RecordingNote,
+    UpdateOBSInputSetting,
+]
+
+
+def init_database(db_path: str):
+    """Create the database and tables."""
+    db.init(db_path)
+    db.connect()
+    db.create_tables(models)
