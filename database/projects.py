@@ -88,6 +88,19 @@ class ObservableModel(Model, Observable):
         database = db
 
 
+class ContentHistory(ObservableModel):
+    observable_name = "content_history"
+    history = ForeignKeyField('self', backref='history')
+    content = TextField()
+    change_description = TextField(null=True)
+    changed_at = DateTimeField()
+
+    class Meta:
+        indexes = (
+            (('content', 'changed_at'), False),  # Index on content and changed_at
+        )
+
+
 class ProjectType(ObservableModel):
     observable_name = "project_type"
     name = CharField(unique=True)
@@ -106,3 +119,115 @@ class SubProject(ObservableModel):
     title = CharField()
     description = TextField()
     project = ForeignKeyField(Project, backref='sub_projects')
+
+
+class Element(ObservableModel):
+    observable_name = "element"
+    parent_element = ForeignKeyField('self', backref='child_elements', null=True)
+    order = IntegerField()
+    name = CharField()
+    description = TextField()
+    sub_project = ForeignKeyField(SubProject, backref='elements')
+
+    def change_order(self, new_order):
+        """Change the order of the element within its sub_project and parent_element context."""
+        if new_order is None or new_order == self.order:
+            return
+        old_order = self.order
+        self.order = new_order
+        self.save()
+        if old_order < new_order:
+            siblings = (
+                Element.select()
+                .where(
+                    (Element.sub_project == self.sub_project) &
+                    (Element.parent_element == self.parent_element) &
+                    (Element.order > old_order) &
+                    (Element.order <= new_order) &
+                    (Element.id != self.id)
+                )
+            )
+            for sibling in siblings:
+                sibling.order -= 1
+                sibling.save()
+        else:
+            siblings = (
+                Element.select()
+                .where(
+                    (Element.sub_project == self.sub_project) &
+                    (Element.parent_element == self.parent_element) &
+                    (Element.order < old_order) &
+                    (Element.order >= new_order) &
+                    (Element.id != self.id)
+                )
+            )
+            for sibling in siblings:
+                sibling.order += 1
+                sibling.save()
+
+    def save(self, *args, **kwargs):
+        """Override save to ensure the order is set correctly within the sub_project and parent_element context."""
+        if self.order is None:
+            max_order = (
+                Element.select(fn.MAX(Element.order))
+                .where(
+                    (Element.sub_project == self.sub_project) &
+                    (Element.parent_element == self.parent_element)
+                )
+                .scalar()
+            )
+            self.order = (max_order or 0) + 1
+        return super().save(*args, **kwargs)
+
+    def delete_instance(self, *args, **kwargs):
+        """Override delete_instance to adjust the order of sibling elements when an element is deleted."""
+        if self.order is not None:
+            siblings = (
+                Element.select()
+                .where(
+                    (Element.sub_project == self.sub_project) &
+                    (Element.parent_element == self.parent_element) &
+                    (Element.order > self.order)
+                )
+            )
+            for sibling in siblings:
+                sibling.order -= 1
+                sibling.save()
+        return super().delete_instance(*args, **kwargs)
+
+    class Meta:
+        indexes = (
+            (('parent_element', 'sub_project', 'order'), True),  # Unique index on parent_element, sub_project, and order
+        )
+
+
+class Record(ObservableModel):
+    observable_name = "record"
+    file_path = CharField()
+
+
+class ElementInRecord(ObservableModel):
+    observable_name = "element_in_record"
+    record = ForeignKeyField(Record, backref="elements")
+    element = ForeignKeyField(Element, backref="record_elements")
+    start_time =  IntegerField(null=True) # en secondes
+    end_time = IntegerField(null=True)
+
+    class Meta:
+        indexes = (
+            (('record', 'element'), True),  # Unique index on record and element
+        )
+
+
+class RecordingNote(ObservableModel):
+    observable_name = "recording_note"
+    element = ForeignKeyField(ElementInRecord, backref='notes')
+    timestamp = IntegerField()  # en secondes
+    content = TextField()
+
+
+class UpdateOBSInputSetting(ObservableModel):
+    observable_name = "update_obs_input_setting"
+    element = ForeignKeyField(Element, backref='obs_input_settings')
+    name = CharField()
+    settings = TextField()
