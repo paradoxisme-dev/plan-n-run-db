@@ -128,18 +128,11 @@ class ProjectType(ObservableModel):
 
 class Project(ObservableModel):
     observable_name = "project"
+    parent_project = ForeignKeyField('self', backref='sub_projects', null=True)
     title = CharField()
     description = ForeignKeyField(HistorisedContent, backref='projects')
     type = ForeignKeyField(ProjectType, backref='projects')
     ressources = ForeignKeyField(Ressource, backref='projects')
-
-
-class SubProject(ObservableModel):
-    observable_name = "sub_project"
-    title = CharField()
-    description = ForeignKeyField(HistorisedContent, backref='sub_projects')
-    project = ForeignKeyField(Project, backref='sub_projects')
-    ressources = ForeignKeyField(Ressource, backref='sub_projects')
 
 
 class Element(ObservableModel):
@@ -148,7 +141,7 @@ class Element(ObservableModel):
     order = IntegerField()
     name = CharField()
     description = ForeignKeyField(HistorisedContent, backref='elements')
-    sub_project = ForeignKeyField(SubProject, backref='elements')
+    project = ForeignKeyField(Project, backref='elements')
     ressources = ForeignKeyField(Ressource, backref='elements')
 
     def change_order(self, new_order):
@@ -162,7 +155,7 @@ class Element(ObservableModel):
             siblings = (
                 Element.select()
                 .where(
-                    (Element.sub_project == self.sub_project) &
+                    (Element.project == self.project) &
                     (Element.parent_element == self.parent_element) &
                     (Element.order > old_order) &
                     (Element.order <= new_order) &
@@ -176,7 +169,7 @@ class Element(ObservableModel):
             siblings = (
                 Element.select()
                 .where(
-                    (Element.sub_project == self.sub_project) &
+                    (Element.project == self.project) &
                     (Element.parent_element == self.parent_element) &
                     (Element.order < old_order) &
                     (Element.order >= new_order) &
@@ -193,7 +186,7 @@ class Element(ObservableModel):
             max_order = (
                 Element.select(fn.MAX(Element.order))
                 .where(
-                    (Element.sub_project == self.sub_project) &
+                    (Element.project == self.project) &
                     (Element.parent_element == self.parent_element)
                 )
                 .scalar()
@@ -207,7 +200,7 @@ class Element(ObservableModel):
             siblings = (
                 Element.select()
                 .where(
-                    (Element.sub_project == self.sub_project) &
+                    (Element.project == self.project) &
                     (Element.parent_element == self.parent_element) &
                     (Element.order > self.order)
                 )
@@ -219,7 +212,7 @@ class Element(ObservableModel):
 
     class Meta:
         indexes = (
-            (('parent_element', 'sub_project', 'order'), True),  # Unique index on parent_element, sub_project, and order
+            (('parent_element', 'project', 'order'), True),  # Unique index on parent_element, project, and order
         )
 
 
@@ -263,7 +256,6 @@ models = [
     RessourceNote,
     ProjectType,
     Project,
-    SubProject,
     Element,
     Record,
     ElementInRecord,
