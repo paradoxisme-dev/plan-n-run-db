@@ -35,7 +35,7 @@ class Observable:
             observer.update(self, event_type, **context)
 
 
-class DBOserver(Observer):
+class DBObserver(Observer):
     def __init__(self):
         self._observers: list[Observable] = []
 
@@ -58,7 +58,7 @@ class DBOserver(Observer):
                     getattr(observer, func_name)(observable)
 
 
-db_observer = DBOserver()
+db_observer = DBObserver()
 
 
 class ObservableModel(Model, Observable):
