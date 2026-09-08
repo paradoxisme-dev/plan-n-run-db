@@ -25,7 +25,7 @@ class CurrentState:
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setWindowTitle("Pla'n'Run DB")
+        self.setWindowTitle("Plan'n'Run DB")
         db_observer.add_observer(self)
         self.current_state = CurrentState()
 
@@ -45,5 +45,9 @@ class MainWindow(QMainWindow):
         self.current_state.db_opened = True
         self.current_state.current_open_db = file_path
         self.current_db_label.setText(f"Database: {self.current_state.current_open_db}")
-        self.load_stream_table()
+        self.load_project_table()
         print("Database opened from history at:", file_path)
+
+    def load_project_table(self):
+        # Implement the logic to load the project table here
+        pass

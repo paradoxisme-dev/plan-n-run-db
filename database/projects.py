@@ -126,11 +126,18 @@ class ProjectType(ObservableModel):
     description = ForeignKeyField(HistorisedContent, backref='project_types')
 
 
+class  ProjectStatus(ObservableModel):
+    observable_name = "project_status"
+    name = CharField(unique=True)
+    description = ForeignKeyField(HistorisedContent, backref='project_statuses')
+
+
 class Project(ObservableModel):
     observable_name = "project"
     parent_project = ForeignKeyField('self', backref='sub_projects', null=True)
     title = CharField()
     description = ForeignKeyField(HistorisedContent, backref='projects')
+    status = ForeignKeyField(ProjectStatus, backref='projects')
     type = ForeignKeyField(ProjectType, backref='projects')
     ressources = ForeignKeyField(Ressource, backref='projects')
 
