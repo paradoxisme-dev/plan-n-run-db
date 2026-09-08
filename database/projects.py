@@ -29,10 +29,10 @@ class Observable:
         if observer in self._observers:
             self._observers.remove(observer)
 
-    def notify_observers(self, event_type: str, **context) -> None:
+    def notify_observers(self, event_type: str) -> None:
         """Notify all observers about an event."""
         for observer in self._observers:
-            observer.update(self, event_type, **context)
+            observer.update(self, event_type)
 
 
 class DBObserver(Observer):
@@ -50,7 +50,7 @@ class DBObserver(Observer):
     def clean_observers(self):
         self._observers.clear()
 
-    def update(self, observable: 'Observable', event_type: str, **context) -> None:
+    def update(self, observable: 'Observable', event_type: str) -> None:
         for observer in self._observers:
             func_names = [f"db_{event_type}_{observable.observable_name}", f"db_{event_type}"]
             for func_name in func_names:
