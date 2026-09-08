@@ -1,0 +1,58 @@
+{
+    "project": [
+        {
+            "name": "Cha\u00eene Youtube",
+            "description": "Une cha\u00eene Youtube."
+        },
+        {
+            "name": "Vlog",
+            "description": "Un vlog personnel."
+        },
+        {
+            "name": "Podcast",
+            "description": "Un projet de podcast."
+        },
+        {
+            "name": "Court-m\u00e9trage",
+            "description": "Un projet de court-m\u00e9trage."
+        },
+        {
+            "name": "S\u00e9rie",
+            "description": "Un projet de s\u00e9rie."
+        },
+        {
+            "name": "Live",
+            "description": "Un projet de live."
+        },
+        {
+            "name": "Format de vid\u00e9o",
+            "description": "Un format de vid\u00e9o."
+        },
+        {
+            "name": "S\u00e9rie de vid\u00e9os",
+            "description": "Un projet de s\u00e9rie de vid\u00e9os divers."
+        },
+        {
+            "name": "Vid\u00e9o",
+            "description": "Un projet de vid\u00e9o divers."
+        }
+    ],
+    "ressource": [
+        {
+            "name": "URL",
+            "description": "Une ressource de type URL."
+        },
+        {
+            "name": "Fichier",
+            "description": "Une ressource de type fichier."
+        },
+        {
+            "name": "Script",
+            "description": "Une ressource de type script."
+        },
+        {
+            "name": "Autre",
+            "description": "Une ressource de type autre."
+        }
+    ]
+}

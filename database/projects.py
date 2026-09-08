@@ -264,71 +264,17 @@ models = [
 ]
 
 
-default_types = {
-    "project": [
-        {
-            "name": "Chaîne Youtube",
-            "description": "Une chaîne Youtube."
-        },
-        {
-            "name": "Vlog",
-            "description": "Un vlog personnel."
-        },
-        {
-            "name": "Podcast",
-            "description": "Un projet de podcast."
-        },
-        {
-            "name": "Court-métrage",
-            "description": "Un projet de court-métrage."
-        },
-        {
-            "name": "Série",
-            "description": "Un projet de série."
-        },
-        {
-            "name": "Live",
-            "description": "Un projet de live."
-        },
-        {
-            "name": "Format de vidéo",
-            "description": "Un format de vidéo."
-        },  
-        {
-            "name": "Série de vidéos",
-            "description": "Un projet de série de vidéos divers."
-        },
-        {
-            "name": "Vidéo",
-            "description": "Un projet de vidéo divers."
-        }
-    ],
-    "ressource": [
-        {
-            "name": "URL",
-            "description": "Une ressource de type URL."
-        },
-        {
-            "name": "Fichier",
-            "description": "Une ressource de type fichier."
-        },
-        {
-            "name": "Script",
-            "description": "Une ressource de type script."
-        },
-        {
-            "name": "Autre",
-            "description": "Une ressource de type autre."
-        }
-    ]
-}
-
-
 def init_database(db_path: str):
     """Create the database and tables."""
     db.init(db_path)
     db.connect()
     db.create_tables(models)
+
+
+def load_default_types(json_file: str = "default_types/all.json"):
+    import json
+    with open(json_file, "r") as f:
+        default_types = json.load(f)
     for project_type in default_types.get("project", []):
         description = HistorisedContent.create(content=project_type["description"])
         ProjectType.get_or_create(name=project_type["name"], defaults={"description": description})
