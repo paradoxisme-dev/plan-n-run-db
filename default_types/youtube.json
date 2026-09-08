@@ -1,0 +1,48 @@
+{
+    "project": [
+        {
+            "name": "Cha\u00eene Youtube",
+            "description": "Une cha\u00eene Youtube."
+        },
+        {
+            "name": "Vid\u00e9o Youtube",
+            "description": "Un projet de vid\u00e9o Youtube."
+        }
+    ],
+    "ressource": [
+        {
+            "name": "URL",
+            "description": "Une ressource de type URL."
+        },
+        {
+            "name": "Fichier",
+            "description": "Une ressource de type fichier."
+        },
+        {
+            "name": "Script",
+            "description": "Une ressource de type script."
+        }
+    ],
+    "project_status": [
+        {
+            "name": "Planification",
+            "description": "Le projet est en phase de planification."
+        },
+        {
+            "name": "\u00c9criture",
+            "description": "Le projet est en phase d'\u00e9criture."
+        },
+        {
+            "name": "Tournage",
+            "description": "Le projet est en phase de tournage."
+        },
+        {
+            "name": "Montage",
+            "description": "Le projet est en phase de montage."
+        },
+        {
+            "name": "En ligne",
+            "description": "Le projet est en ligne."
+        }
+    ]
+}
