@@ -55,6 +55,20 @@ default_types = {
                 "name": "Autre",
                 "description": "Une ressource de type autre."
             }
+        ],
+        "project_status": [
+            {
+                "name": "En cours",
+                "description": "Le projet est en cours."
+            },
+            {
+                "name": "Terminé",
+                "description": "Le projet est terminé."
+            },
+            {
+                "name": "En attente",
+                "description": "Le projet est en attente."
+            }
         ]
     }
 }

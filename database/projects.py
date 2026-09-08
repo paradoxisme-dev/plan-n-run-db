@@ -137,7 +137,7 @@ class Project(ObservableModel):
     parent_project = ForeignKeyField('self', backref='sub_projects', null=True)
     title = CharField()
     description = ForeignKeyField(HistorisedContent, backref='projects')
-    status = ForeignKeyField(ProjectStatus, backref='projects')
+    status = ForeignKeyField(ProjectStatus, backref='projects', null=True)
     type = ForeignKeyField(ProjectType, backref='projects')
     ressources = ForeignKeyField(Ressource, backref='projects')
 
@@ -288,3 +288,6 @@ def load_default_types(json_file: str = "default_types/all.json"):
     for ressource_type in default_types.get("ressource", []):
         description = HistorisedContent.create(content=ressource_type["description"])
         RessourceType.get_or_create(name=ressource_type["name"], defaults={"description": description})
+    for project_status in default_types.get("project_status", []):
+        description = HistorisedContent.create(content=project_status["description"])
+        ProjectStatus.get_or_create(name=project_status["name"], defaults={"description": description})

@@ -54,5 +54,19 @@
             "name": "Autre",
             "description": "Une ressource de type autre."
         }
+    ],
+    "project_status": [
+        {
+            "name": "En cours",
+            "description": "Le projet est en cours."
+        },
+        {
+            "name": "Termin\u00e9",
+            "description": "Le projet est termin\u00e9."
+        },
+        {
+            "name": "En attente",
+            "description": "Le projet est en attente."
+        }
     ]
 }
