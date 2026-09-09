@@ -1,0 +1,53 @@
+{
+    "project": [
+        {
+            "name": "Cha\u00eene Twitch",
+            "description": "Une cha\u00eene Twitch."
+        },
+        {
+            "name": "S\u00e9rie de live",
+            "description": "Un projet de s\u00e9rie de live Twitch."
+        },
+        {
+            "name": "Live Twitch",
+            "description": "Un projet de live Twitch."
+        }
+    ],
+    "ressource": [
+        {
+            "name": "URL",
+            "description": "Une ressource de type URL."
+        },
+        {
+            "name": "Fichier",
+            "description": "Une ressource de type fichier."
+        },
+        {
+            "name": "Script",
+            "description": "Une ressource de type script."
+        }
+    ],
+    "project_status": [
+        {
+            "name": "Planification",
+            "description": "Le projet est en phase de planification."
+        },
+        {
+            "name": "Live",
+            "description": "Le projet est en phase de live."
+        },
+        {
+            "name": "Pr\u00e9paration Replay",
+            "description": "Le projet est en phase de pr\u00e9paration du replay."
+        },
+        {
+            "name": "Replay en ligne",
+            "description": "Le replay est en ligne."
+        },
+        {
+            "name": "En projet",
+            "description": "La s\u00e9rie de live est en projet.",
+            "for_type": "S\u00e9rie de live"
+        }
+    ]
+}

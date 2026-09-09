@@ -169,6 +169,15 @@ default_types = {
                 "name": "En projet",
                 "description": "La série de live est en projet.",
                 "for_type": "Série de live"
+            },
+            {
+                "name": "En cours",
+                "description": "La série de live est en cours.",
+                "for_type": "Série de live"
+            },
+            {
+                "name": "Archivé",
+                "description": "Le projet est archivé."
             }
         ]
     }
