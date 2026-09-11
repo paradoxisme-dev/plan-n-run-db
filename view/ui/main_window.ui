@@ -53,12 +53,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QTableWidget" name="project_table">
-          <column>
-           <property name="text">
-            <string>Id</string>
-           </property>
-          </column>
+         <widget class="QTreeWidget" name="project_tree">
           <column>
            <property name="text">
             <string>Titre</string>
@@ -77,11 +72,6 @@
           <column>
            <property name="text">
             <string>Action</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Parent</string>
            </property>
           </column>
          </widget>
@@ -316,7 +306,23 @@
     <addaction name="separator"/>
     <addaction name="database_history_menu"/>
    </widget>
+   <widget class="QMenu" name="menuTypes">
+    <property name="title">
+     <string>Types</string>
+    </property>
+    <widget class="QMenu" name="add_type_menu">
+     <property name="title">
+      <string>Ajout de types</string>
+     </property>
+     <addaction name="add_types_from_json_action"/>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="actionGestion_des_types"/>
+    <addaction name="separator"/>
+    <addaction name="add_type_menu"/>
+   </widget>
    <addaction name="menu_Fichier"/>
+   <addaction name="menuTypes"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="create_database_action">
@@ -332,6 +338,16 @@
   <action name="clean_database_history_action">
    <property name="text">
     <string>Nétoyer l'historique</string>
+   </property>
+  </action>
+  <action name="actionGestion_des_types">
+   <property name="text">
+    <string>Gestion des  types</string>
+   </property>
+  </action>
+  <action name="add_types_from_json_action">
+   <property name="text">
+    <string>depuis fichier json</string>
    </property>
   </action>
  </widget>

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from database.options import OptionValue
 import json
 from database.projects import Project, Element, Record, db_observer, init_database
+from default_types.generator import default_types
 
 
 import pathlib
@@ -36,9 +37,19 @@ class MainWindow(QMainWindow):
         history_json = OptionValue.get(OptionValue.key == 'open_db_history').value
         self.current_state.history_open_db = json.loads(history_json)
         for db_name in self.current_state.history_open_db:
-            new_menu  = QAction(db_name, self)
-            new_menu.triggered.connect(lambda _, name=db_name: self._open_database(name))
-            self.database_history_menu.addAction(new_menu)
+            new_action  = QAction(db_name, self)
+            new_action.triggered.connect(lambda _, name=db_name: self._open_database(name))
+            self.database_history_menu.addAction(new_action)
+
+        # Load default types
+        for default_type_category in default_types.keys():
+            new_action = QAction(default_type_category, self)
+            new_action.triggered.connect(lambda _, category=default_type_category: self._handle_default_type(category))
+            self.add_type_menu.addAction(new_action)
+
+    def _handle_default_type(self, category):
+        # Implement the logic to handle the selected default type category
+        print(f"Default type category selected: {category}")
 
     def _open_database(self, file_path):
         init_database(file_path)
