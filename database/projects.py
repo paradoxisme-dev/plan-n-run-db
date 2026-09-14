@@ -90,10 +90,21 @@ class ObservableModel(Model, Observable):
 
 class HistorisedContent(ObservableModel):
     observable_name = "historised_content"
-    history = ForeignKeyField('self', backref='history')
+    old_instance = ForeignKeyField('self', backref='next_instance')
     content = TextField()
-    change_description = TextField(null=True)
     changed_at = DateTimeField()
+
+    def save(self, *args, **kwargs):
+        """Override save to automatically set the changed_at timestamp."""
+        old_instance = HistorisedContent.get_or_none(HistorisedContent.id == self.id)
+        if old_instance:
+            if old_instance.content != self.content:
+                import datetime
+                old_instance.changed_at = datetime.now()
+                old_instance.save()
+                self.old_instance = old_instance
+                self.id = None
+        return super().save(*args, **kwargs)
 
     class Meta:
         indexes = (
