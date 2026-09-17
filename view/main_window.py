@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtWidgets import QMainWindow, QFileDialog, QLabel
 from PyQt6.QtGui import QAction
 from PyQt6 import uic
 from dataclasses import dataclass
@@ -33,6 +33,13 @@ class MainWindow(QMainWindow):
         # Load the UI from the .ui file
         uic.loadUi(main_windows_file, self)
 
+        # Initialize the status bar for displaying messages
+        self.status_bar = self.statusBar()
+        self.obs_connection_status_label = QLabel("OBS: Disconnected")
+        self.status_bar.addPermanentWidget(self.obs_connection_status_label)
+        self.current_db_label = QLabel("No database opened")
+        self.status_bar.addWidget(self.current_db_label)
+
         # Load the open database history from the options database
         history_json = OptionValue.get(OptionValue.key == 'open_db_history').value
         self.current_state.history_open_db = json.loads(history_json)
@@ -47,6 +54,39 @@ class MainWindow(QMainWindow):
             new_action.triggered.connect(lambda _, category=default_type_category: self._handle_default_type(category))
             self.add_type_menu.addAction(new_action)
 
+        # Additional setup can go here
+        self.setup_connections()
+
+    def setup_connections(self):
+        # Connect signals and slots here
+        self.create_database_action.triggered.connect(self._create_database)
+
+    def _create_database(self):
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Database File",
+            "",
+            "Database Files (*.db *.sqlite *.sqlite3);;All Files (*)"
+        )
+        if file_path:
+            init_database(file_path)
+            self.current_state.db_opened = True
+            self.current_state.current_open_db = file_path
+            self.current_db_label.setText(f"Database: {self.current_state.current_open_db}")
+            self._add_to_database_history(file_path)
+            print("Database created at:", file_path)
+
+    def _add_to_database_history(self, file_path):
+        if file_path not in self.current_state.history_open_db:
+            if len(self.current_state.history_open_db) >= int(OptionValue.get(OptionValue.key == 'open_db_history_size_max').value):
+                self.current_state.history_open_db.pop(0)  # Remove the oldest entry if we exceed the max history size
+                self.database_history_menu.removeAction(self.database_history_menu.actions()[0])  # Remove the corresponding menu action
+            self.current_state.history_open_db.append(file_path)
+            OptionValue.update(value=json.dumps(self.current_state.history_open_db)).where(OptionValue.key == 'open_db_history').execute()
+            new_menu  = QAction(file_path, self)
+            new_menu.triggered.connect(lambda _, name=file_path: self._open_database_from_history(name))
+            self.database_history_menu.addAction(new_menu)
+
     def _handle_default_type(self, category):
         # Implement the logic to handle the selected default type category
         print(f"Default type category selected: {category}")
@@ -57,7 +97,7 @@ class MainWindow(QMainWindow):
         self.current_state.current_open_db = file_path
         self.current_db_label.setText(f"Database: {self.current_state.current_open_db}")
         self.load_project_table()
-        print("Database opened from history at:", file_path)
+        print("Database opened at:", file_path)
 
     def load_project_table(self):
         # Implement the logic to load the project table here

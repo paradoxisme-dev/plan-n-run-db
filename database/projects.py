@@ -92,6 +92,7 @@ class HistorisedContent(ObservableModel):
     observable_name = "historised_content"
     old_instance = ForeignKeyField('self', backref='next_instance')
     content = TextField()
+    change_message = TextField(null=True)
     changed_at = DateTimeField()
 
     def save(self, *args, **kwargs):
