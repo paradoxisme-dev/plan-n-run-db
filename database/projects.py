@@ -138,7 +138,7 @@ class ProjectType(ObservableModel):
     description = ForeignKeyField(HistorisedContent, backref='project_types')
 
 
-class  ProjectStatus(ObservableModel):
+class ProjectStatus(ObservableModel):
     observable_name = "project_status"
     name = CharField(unique=True)
     description = ForeignKeyField(HistorisedContent, backref='project_statuses')
@@ -157,11 +157,13 @@ class Project(ObservableModel):
 
 class Element(ObservableModel):
     observable_name = "element"
+    project = ForeignKeyField(Project, backref='elements')
     parent_element = ForeignKeyField('self', backref='child_elements', null=True)
+    # true if this element is the starting element within its project and parent_element context
+    is_starting_element = BooleanField(default=False)
     order = IntegerField()
     name = CharField()
     description = ForeignKeyField(HistorisedContent, backref='elements')
-    project = ForeignKeyField(Project, backref='elements')
     ressources = ForeignKeyField(Ressource, backref='elements')
 
     def change_order(self, new_order):
