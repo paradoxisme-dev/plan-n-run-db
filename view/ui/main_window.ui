@@ -298,7 +298,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QTextBrowser" name="project_description_text"/>
+            <widget class="QTextBrowser" name="project_description_text">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QWidget" name="widget_3" native="true">
