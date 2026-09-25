@@ -90,10 +90,10 @@ class ObservableModel(Model, Observable):
 
 class HistorisedContent(ObservableModel):
     observable_name = "historised_content"
-    old_instance = ForeignKeyField('self', backref='next_instance')
+    old_instance = ForeignKeyField('self', backref='next_instance', null=True)
     content = TextField()
     change_message = TextField(null=True)
-    changed_at = DateTimeField()
+    changed_at = DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
         """Override save to automatically set the changed_at timestamp."""
@@ -277,6 +277,7 @@ models = [
     Ressource,
     RessourceNote,
     ProjectType,
+    ProjectStatus,
     Project,
     Element,
     Record,

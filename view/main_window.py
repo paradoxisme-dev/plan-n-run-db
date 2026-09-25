@@ -4,7 +4,9 @@ from PyQt6 import uic
 from dataclasses import dataclass
 from database.options import OptionValue
 import json
-from database.projects import Project, Element, Record, db_observer, init_database
+from database.projects import (
+    Project, Element, Record, db_observer, init_database, load_default_types
+)
 from default_types.generator import default_types
 
 
@@ -88,7 +90,10 @@ class MainWindow(QMainWindow):
             self.database_history_menu.addAction(new_menu)
 
     def _handle_default_type(self, category):
-        # Implement the logic to handle the selected default type category
+        if self.current_state.db_opened:
+            load_default_types(app_dir / "default_types" / f"{category}.json")
+        else:
+            print("No database is currently open.")
         print(f"Default type category selected: {category}")
 
     def _open_database(self, file_path):
