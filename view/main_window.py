@@ -62,6 +62,7 @@ class MainWindow(QMainWindow):
     def setup_connections(self):
         # Connect signals and slots here
         self.create_database_action.triggered.connect(self._create_database)
+        self.add_types_from_json_action.triggered.connect(self._handle_type_file)
 
     def _create_database(self):
         file_path, _ = QFileDialog.getSaveFileName(
@@ -95,6 +96,20 @@ class MainWindow(QMainWindow):
         else:
             print("No database is currently open.")
         print(f"Default type category selected: {category}")
+
+    def _handle_type_file(self):
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Type File",
+            "",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        if file_path:
+            if self.current_state.db_opened:
+                load_default_types(file_path)
+            else:
+                print("No database is currently open.")
+            print(f"Type file selected: {file_path}")
 
     def _open_database(self, file_path):
         init_database(file_path)
