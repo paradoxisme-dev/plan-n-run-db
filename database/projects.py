@@ -116,14 +116,14 @@ class HistorisedContent(ObservableModel):
 class RessourceType(ObservableModel):
     observable_name = "ressource_type"
     name = CharField()
-    description = ForeignKeyField(HistorisedContent, backref='ressource_types')
+    description = ForeignKeyField(HistorisedContent, null=True, backref='ressource_types')
 
 
 class Ressource(ObservableModel):
     observable_name = "ressource"
     name = CharField()
     type = ForeignKeyField(RessourceType, backref='ressources')
-    description = ForeignKeyField(HistorisedContent, backref='ressources')
+    description = ForeignKeyField(HistorisedContent, null=True, backref='ressources')
 
 
 class RessourceNote(ObservableModel):
@@ -135,13 +135,13 @@ class RessourceNote(ObservableModel):
 class ProjectType(ObservableModel):
     observable_name = "project_type"
     name = CharField(unique=True)
-    description = ForeignKeyField(HistorisedContent, backref='project_types')
+    description = ForeignKeyField(HistorisedContent, null=True, backref='project_types')
 
 
 class ProjectStatus(ObservableModel):
     observable_name = "project_status"
     name = CharField(unique=True)
-    description = ForeignKeyField(HistorisedContent, backref='project_statuses')
+    description = ForeignKeyField(HistorisedContent, null=True, backref='project_statuses')
     for_type = ForeignKeyField(ProjectType, backref='project_statuses', null=True)
 
 
@@ -149,10 +149,10 @@ class Project(ObservableModel):
     observable_name = "project"
     parent_project = ForeignKeyField('self', backref='sub_projects', null=True)
     title = CharField()
-    description = ForeignKeyField(HistorisedContent, backref='projects')
+    description = ForeignKeyField(HistorisedContent, null=True, backref='projects')
     status = ForeignKeyField(ProjectStatus, backref='projects', null=True)
     type = ForeignKeyField(ProjectType, backref='projects')
-    ressources = ForeignKeyField(Ressource, backref='projects')
+    ressources = ForeignKeyField(Ressource, null=True, backref='projects')
 
 
 class Element(ObservableModel):
@@ -163,8 +163,8 @@ class Element(ObservableModel):
     is_starting_element = BooleanField(default=False)
     order = IntegerField()
     name = CharField()
-    description = ForeignKeyField(HistorisedContent, backref='elements')
-    ressources = ForeignKeyField(Ressource, backref='elements')
+    description = ForeignKeyField(HistorisedContent, null=True, backref='elements')
+    ressources = ForeignKeyField(Ressource, null=True, backref='elements')
 
     def change_order(self, new_order):
         """Change the order of the element within its sub_project and parent_element context."""
@@ -299,15 +299,25 @@ def load_default_types(json_file: str = "default_types/all.json"):
     with open(json_file, "r") as f:
         default_types = json.load(f)
     for project_type in default_types.get("project", []):
-        description = HistorisedContent.create(content=project_type["description"])
-        ProjectType.get_or_create(name=project_type["name"], defaults={"description": description})
+        project_type_obj, project_type_created = ProjectType.get_or_create(name=project_type["name"])
+        if project_type_created:
+            description = HistorisedContent.create(content=project_type["description"])
+            project_type_obj.description = description
+            project_type_obj.save()
     for ressource_type in default_types.get("ressource", []):
-        description = HistorisedContent.create(content=ressource_type["description"])
-        RessourceType.get_or_create(name=ressource_type["name"], defaults={"description": description})
+        ressource_type_obj, ressource_type_created = RessourceType.get_or_create(name=ressource_type["name"])
+        if ressource_type_created:
+            description = HistorisedContent.create(content=ressource_type["description"])
+            ressource_type_obj.description = description
+            ressource_type_obj.save()
     for project_status in default_types.get("project_status", []):
-        description = HistorisedContent.create(content=project_status["description"])
         for_type_name = project_status.get("for_type")
         for_type = None
         if for_type_name:
             for_type = ProjectType.get_or_create(name=for_type_name)[0]
-        ProjectStatus.get_or_create(name=project_status["name"], defaults={"description": description, "for_type": for_type})
+        project_status_obj, project_status_created = ProjectStatus.get_or_create(name=project_status["name"])
+        if project_status_created:
+            description = HistorisedContent.create(content=project_status["description"])
+            project_status_obj.description = description
+            project_status_obj.for_type = for_type
+            project_status_obj.save()
