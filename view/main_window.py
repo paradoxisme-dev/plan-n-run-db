@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from database.options import OptionValue
 import json
 from database.projects import (
-    Project, Element, Record, db_observer, init_database, load_default_types
+    Project, Element, Record, db_observer, init_database, load_default_types,
+    ProjectType
 )
 from default_types.generator import default_types
 
@@ -116,9 +117,27 @@ class MainWindow(QMainWindow):
         self.current_state.db_opened = True
         self.current_state.current_open_db = file_path
         self.current_db_label.setText(f"Database: {self.current_state.current_open_db}")
+        for project_type in ProjectType.select():
+            self.db_insert_project_type(project_type)
         self.load_project_table()
         print("Database opened at:", file_path)
 
     def load_project_table(self):
         # Implement the logic to load the project table here
         pass
+
+## database events
+
+    def on_insert_project_type(self, project_type):
+        # Implement the logic to handle the insertion of a new project type here
+        print(f"New project type inserted: {project_type}")
+
+    def db_insert_project_type(self, project_type: ProjectType):
+        # Implement the logic to insert a new project type into the database here
+        self.project_status_combo.addItem(project_type.name, project_type.id)
+        print(f"Inserting project type into the database: {project_type}")
+
+    def on_insert_project(self, project):
+        # Implement the logic to handle the insertion of a new project here
+        print(f"New project inserted: {project}")
+
